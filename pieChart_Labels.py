@@ -27,7 +27,6 @@ class LabelPieChartAnalysis:
             print(f"No labels found to display for {title}.")
             return
 
-        # Pie chart customization
         explode = [0.05] * len(labels)
         colors = plt.cm.tab20.colors[:len(labels)]
 
@@ -61,3 +60,8 @@ class LabelPieChartAnalysis:
         status_counter = self.analyze_label_distribution("status/")
         print("Status Label counts:", status_counter)
         self.plot_pie_chart(status_counter, 'Distribution of Issues by Status Label')
+
+        print("\nRunning 'area/' Label Pie Chart Analysis...")
+        area_counter = self.analyze_label_distribution("area/")
+        print("Area Label counts:", area_counter)
+        self.plot_pie_chart(area_counter, 'Distribution of Issues by Area Label')
