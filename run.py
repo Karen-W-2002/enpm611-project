@@ -9,6 +9,7 @@ import argparse
 from feature1 import run_feature_1
 import config
 from example_analysis import ExampleAnalysis
+from pieChart_Labels import LabelPieChartAnalysis
 from analysis_one import AnalysisOne
 
 
@@ -53,6 +54,6 @@ elif args.feature == 1:
 elif args.feature == 2:
     pass # TODO call second analysis
 elif args.feature == 3:
-    pass # TODO call third analysis
+    LabelPieChartAnalysis().run() # TODO call third analysis
 else:
     print('Need to specify which feature to run with --feature flag.')
