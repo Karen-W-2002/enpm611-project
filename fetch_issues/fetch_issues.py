@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import time
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -9,41 +10,51 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 REPO = "python-poetry/poetry"
 API_URL = f"https://api.github.com/repos/{REPO}/issues"
 
-headers = {
+HEADERS = {
     "Authorization": f"token {GITHUB_TOKEN}",
     "Accept": "application/vnd.github.v3+json"
 }
 
-def fetch_issue_timeline(issue_number):
-    """Fetches the timeline events for a given issue number and extracts relevant details."""
-    url = f"https://api.github.com/repos/python-poetry/poetry/issues/{issue_number}/timeline"
-    headers = {"Accept": "application/vnd.github.v3+json"}
+def check_rate_limit():
+    """Check GitHub API rate limit and sleep if necessary."""
+    resp = requests.get("https://api.github.com/rate_limit", headers=HEADERS)
+    data = resp.json()
+    remaining = data["rate"]["remaining"]
+    reset_time = data["rate"]["reset"]
+    
+    if remaining == 0:
+        sleep_time = reset_time - int(time.time()) + 5
+        print(f"Rate limit hit. Sleeping for {sleep_time} seconds...")
+        time.sleep(sleep_time)
 
-    response = requests.get(url, headers=headers)
+def fetch_issue_timeline(issue_number):
+    """Fetch timeline for a given issue."""
+    url = f"https://api.github.com/repos/{REPO}/issues/{issue_number}/timeline"
+    check_rate_limit()
+    
+    response = requests.get(url, headers=HEADERS)
     if response.status_code != 200:
         print(f"Error fetching timeline for issue {issue_number}: {response.status_code}")
         return []
 
-    events = response.json()
-    return format_issue_timeline(events)
+    return format_issue_timeline(response.json())
 
 def format_issue_timeline(events):
-    """Formats the timeline events to only include event_type, author, event_date, label, and comment."""
+    """Formats the timeline events."""
     formatted_events = []
-    
     for event in events:
-        formatted_event = {
+        formatted_events.append({
             "event_type": event.get("event"),
             "author": event.get("actor", {}).get("login", "") if event.get("actor") else "",
             "event_date": event.get("created_at"),
             "label": event.get("label", {}).get("name") if event.get("event") == "labeled" else "",
             "comment": event.get("body") if event.get("event") == "commented" else ""
-        }
-        formatted_events.append(formatted_event)
-
+        })
     return formatted_events
+
 def format_issue(issue):
-    """Format issue data into a clean structure."""
+    """Format basic issue data + timeline."""
+    timeline = fetch_issue_timeline(issue.get("number"))
     return {
         "url": issue.get("html_url"),
         "creator": issue.get("user", {}).get("login"),
@@ -55,15 +66,19 @@ def format_issue(issue):
         "number": issue.get("number"),
         "created_date": issue.get("created_at"),
         "updated_date": issue.get("updated_at"),
-        "timeline_url": f"https://api.github.com/repos/python-poetry/poetry/issues/{issue.get('number')}/timeline",
-        "events": fetch_issue_timeline(issue.get("number"))
+        "closed_date": issue.get("closed_at"),
+        "timeline_url": f"https://api.github.com/repos/{REPO}/issues/{issue.get('number')}/timeline",
+        "events": timeline
     }
 
 all_issues = []
 page = 1
 
 while True:
-    response = requests.get(API_URL, headers=headers, params={"state": "all", "per_page": 100, "page": page})
+    check_rate_limit()
+    print(f"Fetching page {page}...")
+
+    response = requests.get(API_URL, headers=HEADERS, params={"state": "all", "per_page": 50, "page": page})
     
     if response.status_code != 200:
         print(f"Error {response.status_code}: {response.text}")
@@ -71,14 +86,18 @@ while True:
 
     issues = response.json()
     if not issues:
-        break  # Stop if no more issues
+        break
 
-    formatted_issues = [format_issue(issue) for issue in issues]
-    all_issues.extend(formatted_issues)
-    page += 1  # Fetch next page
+    for issue in issues:
+        # Optional: Skip PRs, as they also appear in /issues endpoint
+        if "pull_request" in issue:
+            continue
+        all_issues.append(format_issue(issue))
+        time.sleep(1)  # Small delay between issue fetches
 
-# Save as JSON file
+    page += 1
+
 with open("poetry_data.json", "w", encoding="utf-8") as f:
     json.dump(all_issues, f, indent=4)
 
-print(f"Saved {len(all_issues)} formatted issues to poetry_data.json")
+print(f"Saved {len(all_issues)} issues to poetry_data.json")
