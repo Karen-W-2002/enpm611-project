@@ -6,7 +6,7 @@ the command line to run the analyses.
 """
 
 import argparse
-
+from feature1 import run_feature_1
 import config
 from example_analysis import ExampleAnalysis
 from analysis_one import AnalysisOne
@@ -47,7 +47,7 @@ config.overwrite_from_args(args)
     
 # Run the feature specified in the --feature flag
 if args.feature == 0:
-    ExampleAnalysis().run()
+    run_feature_1()
 elif args.feature == 1:
     AnalysisOne().run()
 elif args.feature == 2:
