@@ -1,52 +1,149 @@
-# ENPM611 Project Application Template
 
-This is the template for the ENPM611 class project. Use this template in conjunction with the provided data to implement an application that analyzes GitHub issues for the [poetry](https://github.com/python-poetry/poetry/issues) Open Source project and generates interesting insights.
+# ENPM611 Poetry Issues Analysis
 
-This application template implements some of the basic functions:
+This repository contains an application for analyzing **GitHub Issues** from the [`python-poetry/poetry`](https://github.com/python-poetry/poetry) repository. The application retrieves issues, stores them in a local JSON file, and provides multiple insights via command-line features and matplotlib charts.
 
-- `data_loader.py`: Utility to load the issues from the provided data file and returns the issues in a runtime data structure (e.g., objects)
-- `model.py`: Implements the data model into which the data file is loaded. The data can then be accessed by accessing the fields of objects.
-- `config.py`: Supports configuring the application via the `config.json` file. You can add other configuration paramters to the `config.json` file.
-- `run.py`: This is the module that will be invoked to run your application. Based on the `--feature` command line parameter, one of the three analyses you implemented will be run. You need to extend this module to call other analyses.
+## Table of Contents
+1. [Project Overview](#project-overview)  
+2. [Features](#features)  
+   - [Feature 1: Issue Lifespan and Stats by Label](#feature-1-issue-lifespan-and-stats-by-label)  
+   - [Feature 2: Label vs. Number of Comments](#feature-2-label-vs-number-of-comments)  
+   - [Feature 3: Pie Chart of Label Distribution](#feature-3-pie-chart-of-label-distribution)  
+3. [Fetching Data](#fetching-data)  
+4. [Installation and Setup](#installation-and-setup)  
+5. [Usage](#usage)  
+6. [Repository Structure](#repository-structure)  
+7. [Testing](#testing)  
 
-With the utility functions provided, you should focus on implementing creative analyses that generate intersting and insightful insights.
+---
 
-In addition to the utility functions, an example analysis has also been implemented in `example_analysis.py`. It illustrates how to use the provided utility functions and how to produce output.
+## Project Overview
 
-## Setup
+For **ENPM611**, we focus on analyzing how issues evolve in the `python-poetry` repository. Our goal is to uncover meaningful insights about the labels, contributors, and life cycles of issues. We look at:
 
-To get started, your team should create a fork of this repository. Then, every team member should clone your repository to their local computer. 
+- **Time to implement or resolve issues**  
+- **Number of comments and contributors involved**  
+- **Distribution of issues by labels**  
 
 
-### Install dependencies
+---
 
-In the root directory of the application, create a virtual environment, activate that environment, and install the dependencies like so:
+## Features
+
+### Feature 1: Issue Lifespan and Stats by Label
+- **Input**: A label of interest (e.g., `bug`, `enhancement`, etc.).  
+- **Output**:  
+  - Average issue lifespan for that label  
+  - Average number of comments  
+  - Number of contributors involved  
+- **Purpose**: Helps identify how long it typically takes to resolve issues with certain labels and how active they are.
+
+### Feature 2: Label vs. Number of Comments
+- **Input**: *No special argument required*.  
+- **Output**: A bar chart showing the total number of comments for each label.  
+- **Purpose**: Quickly see which labels drive the most discussion or have the highest engagement.
+
+### Feature 3: Pie Chart of Label Distribution
+- **Input**: *No special argument required by default.*  
+- **Output**: Several pie charts (e.g., for labels prefixed `kind/`, `status/`, `area/`) showing how issues are distributed by those label categories.  
+- **Purpose**: Visual snapshot of how many issues fall under each “kind,” “status,” or “area” category.
+
+---
+
+## Fetching Data
+
+We provide a script **`fetch_issues.py`** that uses the GitHub API to download all issues (including timeline events) from `python-poetry/poetry` and save them to `poetry_data.json`. 
+
+1. **Set your GitHub Token**  
+   - Create a `.env` file in the project root (same level as `fetch_issues.py`) with the line:  
+     ```
+     GITHUB_TOKEN=your_personal_access_token
+     ```
+   - This token must have sufficient scopes to read public repository data.  
+2. **Run the fetch script**  
+   ```bash
+   python fetch_issues.py
+   ```
+3. **Check the output**  
+   - A new file named `poetry_data.json` is generated, containing the issues and their events.
+
+---
+
+## Installation and Setup
+
+1. **Clone this repository**:
+   ```bash
+   git clone https://github.com/Karen-W-2002/enpm611-project.git
+   cd enpm611-project
+   ```
+2. **(Optional) Create and activate a virtual environment**:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. **(Optional) Prepare `.env` file** if you plan to run `fetch_issues.py`.
+
+---
+
+## Usage
+
+After installation, you can run any of the analysis features using:
+
+```bash
+python run.py --feature <FEATURE_NUMBER>
+```
+
+- **Feature numbers**:
+  - `--feature 1` : Runs Issue Lifespan/Stats by Label  
+  - `--feature 2` : Runs Label vs. Number of Comments  
+  - `--feature 3` : Pie Charts for label distribution  
+
+You can also pass optional flags:
+- `--user <USERNAME>` to focus on a particular contributor (if implemented).
+- `--label <LABEL>` to focus on a specific label (if implemented).
+
+### Examples
+```bash
+python run.py --feature 1 --label bug
+python run.py --feature 2
+python run.py --feature 3
+```
+
+---
+
+## Repository Structure
 
 ```
-pip install -r requirements.txt
+.
+├── data/
+│   └── poetry_data.json
+├── config.py
+├── example_analysis.py
+├── fetch_issues.py
+├── feature1.py
+├── pieChart_Labels.py
+├── requirements.txt
+├── run.py
+└── README.md
 ```
 
-### Download and configure the data file
+---
 
-Download the data file (in `json` format) from the project assignment in Canvas and update the `config.json` with the path to the file. Note, you can also specify an environment variable by the same name as the config setting (`ENPM611_PROJECT_DATA_PATH`) to avoid committing your personal path to the repository.
+## Testing
 
+- Run tests:
+  ```bash
+  python -m coverage run -m unittest discover
+  ```
+- View coverage:
+  ```bash
+  python -m coverage report --omit="test_*"
+  ```
+- Target: 90% or higher statement coverage
 
-### Run an analysis
+---
 
-With everything set up, you should be able to run the existing example analysis:
-
-```
-python run.py --feature 0
-```
-
-That will output basic information about the issues to the command line.
-
-
-## VSCode run configuration
-
-To make the application easier to debug, runtime configurations are provided to run each of the analyses you are implementing. When you click on the run button in the left-hand side toolbar, you can select to run one of the three analyses or run the file you are currently viewing. That makes debugging a little easier. This run configuration is specified in the `.vscode/launch.json` if you want to modify it.
-
-The `.vscode/settings.json` also customizes the VSCode user interface sligthly to make navigation and debugging easier. But that is a matter of preference and can be turned off by removing the appropriate settings.
-
-## How to create and use .env files (Github Token for parser)
-https://www.geeksforgeeks.org/how-to-create-and-use-env-files-in-python/
