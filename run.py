@@ -47,11 +47,11 @@ config.overwrite_from_args(args)
     
 # Run the feature specified in the --feature flag
 if args.feature == 0:
-    run_feature_1()
+    ExampleAnalysis.run()
 elif args.feature == 1:
     AnalysisOne().run()
 elif args.feature == 2:
-    pass # TODO call second analysis
+    run_feature_1()
 elif args.feature == 3:
     pass # TODO call third analysis
 else:

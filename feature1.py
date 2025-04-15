@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 
 def run_feature_1():
-    with open("data/poetry_data.json") as f:
+    with open("fetch_issues/poetry_data.json") as f:
         issues = json.load(f)
 
     label_comment_count = defaultdict(int)
