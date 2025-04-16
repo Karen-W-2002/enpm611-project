@@ -6,7 +6,7 @@ the command line to run the analyses.
 """
 
 import argparse
-from feature1 import run_feature_1
+from feature1 import LabelCommentGraph
 import config
 from example_analysis import ExampleAnalysis
 from pieChart_Labels import LabelPieChartAnalysis
@@ -52,7 +52,8 @@ if args.feature == 0:
 elif args.feature == 1:
     AnalysisOne().run()
 elif args.feature == 2:
-    run_feature_1()
+    graph = LabelCommentGraph()
+    graph.run()
 elif args.feature == 3:
     LabelPieChartAnalysis().run() # TODO call third analysis
 else:
