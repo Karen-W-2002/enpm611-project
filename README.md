@@ -119,12 +119,17 @@ python run.py --feature 3
 
 ```
 .
-├── data/
+├── fetch_issues/
+│   └── fetch_issues.py
 │   └── poetry_data.json
+├── analysis_one.py
 ├── config.py
+├── config.json
+├── data_loader.py
 ├── example_analysis.py
 ├── fetch_issues.py
-├── feature1.py
+├── feature2.py
+├── model.py
 ├── pieChart_Labels.py
 ├── requirements.txt
 ├── run.py
@@ -133,17 +138,4 @@ python run.py --feature 3
 
 ---
 
-## Testing
-
-- Run tests:
-  ```bash
-  python -m coverage run -m unittest discover
-  ```
-- View coverage:
-  ```bash
-  python -m coverage report --omit="test_*"
-  ```
-- Target: 90% or higher statement coverage
-
----
 
