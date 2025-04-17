@@ -91,5 +91,28 @@ class AnalysisOne:
             plt.tight_layout()
             plt.show()
 
+            # Plot Top 10 Labels by Average Comments
+            df_comments = df.nlargest(10, 'avg_comments')
+            df_comments.plot(
+                x="label", y="avg_comments", kind="bar",
+                title="Top 10 Labels by Avg. Number of Comments", figsize=(12, 6),
+                color="orange"
+            )
+            plt.ylabel("Avg. Comments")
+            plt.tight_layout()
+            plt.show()
+
+            # Plot Top 10 Labels by Number of Contributors
+            df_contributors = df.nlargest(10, 'num_contributors')
+            df_contributors.plot(
+                x="label", y="num_contributors", kind="bar",
+                title="Top 10 Labels by Number of Contributors", figsize=(12, 6),
+                color="green"
+            )
+            plt.ylabel("Number of Contributors")
+            plt.tight_layout()
+            plt.show()
+
+
 if __name__ == '__main__':
     AnalysisOne().run()

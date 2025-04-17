@@ -15,7 +15,6 @@ This repository contains an application for analyzing **GitHub Issues** from the
 6. [Repository Structure](#repository-structure)  
 7. [Testing](#testing)  
 
----
 
 ## Project Overview
 
@@ -95,18 +94,22 @@ After installation, you can run any of the analysis features using:
 python run.py --feature <FEATURE_NUMBER>
 ```
 
-- **Feature numbers**:
-  - `--feature 1` : Runs Issue Lifespan/Stats by Label  
-  - `--feature 2` : Runs Label vs. Number of Comments  
-  - `--feature 3` : Pie Charts for label distribution  
+## Examples
+### Feature 1
+Example output table of a specific label
+![](/assets//feature1_input1.png)
 
-### Examples
-```bash
-python run.py --feature 1
-python run.py --feature 2
-python run.py --feature 3
-```
+Example output table of all labels
+![](/assets/feature1_input2.png)
 
+Example output charts for all labels (top 10)
+![](/assets/feature1_chart_issuelifespan.png)
+![](/assets/feature1_chart_contributors.png)
+![](/assets/feature1_chart_comments.png)
+
+### Feature 2 TBD
+
+### Feature 3 TBD
 
 ## Repository Structure
 
