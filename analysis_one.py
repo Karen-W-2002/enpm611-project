@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from data_loader import DataLoader
-from model import Issue, Event
+from model import Issue
 import config
 
 class AnalysisOne:
@@ -20,7 +20,6 @@ class AnalysisOne:
 
     def run(self):
         issues: List[Issue] = DataLoader().get_issues()
-
         label_stats: Dict[str, List[Dict]] = defaultdict(list)
 
         for issue in issues:
@@ -64,18 +63,33 @@ class AnalysisOne:
             })
 
         df = pd.DataFrame(results)
-        print(df.sort_values(by="avg_lifespan_hours", ascending=False).to_string(index=False))
+        df = df.sort_values(by="avg_lifespan_hours", ascending=False)
 
-        # Plot top labels by avg lifespan
-        df_plot = df[df['avg_lifespan_hours'] != "N/A"]
-        df_plot["avg_lifespan_hours"] = pd.to_numeric(df_plot["avg_lifespan_hours"])
-        df_plot.nlargest(10, 'avg_lifespan_hours').plot(
-            x="label", y="avg_lifespan_hours", kind="bar",
-            title="Top 10 Labels by Avg. Issue Lifespan", figsize=(12, 6)
-        )
-        plt.ylabel("Avg. Lifespan (hours)")
-        plt.tight_layout()
-        plt.show()
+        # User interaction
+        print("\nAvailable labels:")
+        for label in df['label']:
+            print(f"- {label}")
+        print("\nType a label name to see its stats or type 'all' to see everything.")
+        user_input = input("Your choice: ").strip()
+
+        if user_input.lower() == "all":
+            print(df.to_string(index=False))
+        elif user_input in df['label'].values:
+            print(df[df['label'] == user_input].to_string(index=False))
+        else:
+            print("Invalid input. Please run the program again and select a valid label.")
+
+        # Plot (only if "all" or valid label)
+        if user_input.lower() == "all":
+            df_plot = df[df['avg_lifespan_hours'] != "N/A"].copy()
+            df_plot["avg_lifespan_hours"] = pd.to_numeric(df_plot["avg_lifespan_hours"])
+            df_plot.nlargest(10, 'avg_lifespan_hours').plot(
+                x="label", y="avg_lifespan_hours", kind="bar",
+                title="Top 10 Labels by Avg. Issue Lifespan", figsize=(12, 6)
+            )
+            plt.ylabel("Avg. Lifespan (hours)")
+            plt.tight_layout()
+            plt.show()
 
 if __name__ == '__main__':
     AnalysisOne().run()
