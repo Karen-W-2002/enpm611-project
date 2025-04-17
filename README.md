@@ -12,8 +12,9 @@ This repository contains an application for analyzing **GitHub Issues** from the
 3. [Fetching Data](#fetching-data)  
 4. [Installation and Setup](#installation-and-setup)  
 5. [Usage](#usage)  
-6. [Repository Structure](#repository-structure)  
-7. [Testing](#testing)  
+6. [Examples](#examples)
+7. [Repository Structure](#repository-structure)  
+7. [App Functionality](#app-functionality)  
 
 
 ## Project Overview
@@ -116,7 +117,7 @@ Example output charts for yearly trends:
 ![](/assets/feature2_chart_bugTrend.png)
 ![](/assets/feature2_chart_featureTrend.png)
 
-### Feature 3 TBD
+### Feature 3
 Example output pie charts for different labels distribution:
 ![](/assets/feature3_pie_kindLabel.png)
 ![](/assets/feature3_pie_statusLabel.png)
