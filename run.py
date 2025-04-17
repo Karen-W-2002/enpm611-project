@@ -6,9 +6,8 @@ the command line to run the analyses.
 """
 
 import argparse
-from feature1 import LabelCommentGraph
+from feature2 import LabelCommentGraph
 import config
-from example_analysis import ExampleAnalysis
 from pieChart_Labels import LabelPieChartAnalysis
 from analysis_one import AnalysisOne
 
@@ -47,9 +46,7 @@ args = parse_args()
 config.overwrite_from_args(args)
     
 # Run the feature specified in the --feature flag
-if args.feature == 0:
-    ExampleAnalysis.run()
-elif args.feature == 1:
+if args.feature == 1:
     AnalysisOne().run()
 elif args.feature == 2:
     graph = LabelCommentGraph()

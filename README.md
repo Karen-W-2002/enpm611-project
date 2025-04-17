@@ -19,14 +19,12 @@ This repository contains an application for analyzing **GitHub Issues** from the
 
 ## Project Overview
 
-For **ENPM611**, we focus on analyzing how issues evolve in the `python-poetry` repository. Our goal is to uncover meaningful insights about the labels, contributors, and life cycles of issues. We look at:
+For this project, we focus on analyzing how issues evolve in the `python-poetry` repository. Our goal is to uncover meaningful insights about the labels, contributors, and life cycles of issues. We look at:
 
 - **Time to implement or resolve issues**  
 - **Number of comments and contributors involved**  
 - **Distribution of issues by labels**  
 
-
----
 
 ## Features
 
@@ -48,7 +46,6 @@ For **ENPM611**, we focus on analyzing how issues evolve in the `python-poetry` 
 - **Output**: Several pie charts (e.g., for labels prefixed `kind/`, `status/`, `area/`) showing how issues are distributed by those label categories.  
 - **Purpose**: Visual snapshot of how many issues fall under each “kind,” “status,” or “area” category.
 
----
 
 ## Fetching Data
 
@@ -67,7 +64,6 @@ We provide a script **`fetch_issues.py`** that uses the GitHub API to download a
 3. **Check the output**  
    - A new file named `poetry_data.json` is generated, containing the issues and their events.
 
----
 
 ## Installation and Setup
 
@@ -86,8 +82,10 @@ We provide a script **`fetch_issues.py`** that uses the GitHub API to download a
    pip install -r requirements.txt
    ```
 4. **(Optional) Prepare `.env` file** if you plan to run `fetch_issues.py`.
+   ```bash
+   GITHUB_TOKEN="YOUR_GITHUB_TOKEN"
+   ```
 
----
 
 ## Usage
 
@@ -102,23 +100,17 @@ python run.py --feature <FEATURE_NUMBER>
   - `--feature 2` : Runs Label vs. Number of Comments  
   - `--feature 3` : Pie Charts for label distribution  
 
-You can also pass optional flags:
-- `--user <USERNAME>` to focus on a particular contributor (if implemented).
-- `--label <LABEL>` to focus on a specific label (if implemented).
-
 ### Examples
 ```bash
-python run.py --feature 1 --label bug
+python run.py --feature 1
 python run.py --feature 2
 python run.py --feature 3
 ```
 
----
 
 ## Repository Structure
 
 ```
-.
 ├── fetch_issues/
 │   └── fetch_issues.py
 │   └── poetry_data.json
@@ -126,7 +118,6 @@ python run.py --feature 3
 ├── config.py
 ├── config.json
 ├── data_loader.py
-├── example_analysis.py
 ├── fetch_issues.py
 ├── feature2.py
 ├── model.py
@@ -136,6 +127,49 @@ python run.py --feature 3
 └── README.md
 ```
 
----
+## App Functionality
+The parser implements these functions:
+- `fetch_issues.py`: This script retrieves all issues from the python-poetry/poetry GitHub repository using the GitHub REST API. It fetches issue metadata, including labels, state, assignees, and timestamps, as well as a detailed timeline of events (e.g., labeling, commenting). The timeline enriches each issue with historical context.
+The issues are paginated and rate-limit aware, ensuring safe and complete data extraction. All formatted issues are saved to poetry_data.json for later analysis.
 
+This application implements these functions:
+- `data_loader.py`: Utility to load the issues from the provided data file and returns the issues in a runtime data structure (e.g., objects)
+- `model.py`: Implements the data model into which the data file is loaded. The data can then be accessed by accessing the fields of objects.
+- `config.py`: Supports configuring the application via the config.json file. You can add other configuration paramters to the config.json file.
+- `run.py`: This is the module that will be invoked to run your application. Based on the --feature command line parameter, one of the three analyses you implemented will be run. You need to extend this module to call other analyses.
 
+The analysis implements these functions:
+- `analysis_one.py`: Performs an input which is a label-based analysis on GitHub issues. For each label, it calculates:
+  - Average issue lifespan (in hours)
+  - Average number of comments
+  - Number of contributors (issue creators + event authors)
+
+  The results are presented in a table, and the user can choose to view stats for a specific label or all labels. If "all" is selected, a bar chart is generated to visualize the top 10 labels by average lifespan.
+  
+  This analysis helps identify which labels are associated with longer-running or more complex discussions.
+- `feature2.py`: Analyzes GitHub issue data to visualize the total number of comments per label.
+
+   - Loads issues from poetry_data.json
+
+   - Tallies comment counts from timeline events for each label
+
+   - Generates a bar chart showing the top 15 labels based on total comment activity
+
+  This helps identify which labels (and by proxy, which types of issues) drive the most discussion or engagement in the repository.
+- `pieChart_Labels.py`: Generates pie charts to visualize the distribution of GitHub issues by label categories. Specifically focuses on labels that start with:
+
+    - kind/ (e.g., bug, feature)
+
+    - status/ (e.g., needs info, triaged)
+
+    - area/ (e.g., packaging, dependencies)
+
+    For each category:
+
+    - Filters and counts labels with the matching prefix
+
+    - Displays a pie chart showing percentage distribution
+
+    - Adds exact counts and labels to the legend for clarity
+
+    This helps reveal where most issues are concentrated in terms of type, progress status, and functional area.
