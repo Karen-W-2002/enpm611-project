@@ -28,7 +28,7 @@ For this project, we focus on analyzing how issues evolve in the `python-poetry`
 ## Features
 
 ### Feature 1: Issue Lifespan and Stats by Label
-- **Input**: A label of interest (e.g., `bug`, `enhancement`, etc.).  
+- **Input**: A label of interest from the given list (e.g., `bug`, `enhancement`, etc.).  
 - **Output**:  
   - Average issue lifespan for that label  
   - Average number of comments  
@@ -37,8 +37,8 @@ For this project, we focus on analyzing how issues evolve in the `python-poetry`
 
 ### Feature 2: Label vs. Number of Comments
 - **Input**: *No special argument required*.  
-- **Output**: A bar chart showing the total number of comments for each label.  
-- **Purpose**: Quickly see which labels drive the most discussion or have the highest engagement.
+- **Output**: Couple of bar charts showing the total number of comments for top 15 labels and yearly trend of area label. Also including couple of line charts to shoe the trend of bug and features.  
+- **Purpose**: Quickly see which labels drive the most discussion or have the highest engagement and different trends over the years since repo was created.
 
 ### Feature 3: Pie Chart of Label Distribution
 - **Input**: *No special argument required by default.*  
@@ -96,20 +96,31 @@ python run.py --feature <FEATURE_NUMBER>
 
 ## Examples
 ### Feature 1
-Example output table of a specific label
-![](/assets//feature1_input1.png)
+Example output table of a specific label:
+![](/assets/feature1_input1.png)
 
-Example output table of all labels
+Example output table of all labels:
 ![](/assets/feature1_input2.png)
 
-Example output charts for all labels (top 10)
+Example output charts for all labels (top 10):
 ![](/assets/feature1_chart_issuelifespan.png)
 ![](/assets/feature1_chart_contributors.png)
 ![](/assets/feature1_chart_comments.png)
 
-### Feature 2 TBD
+### Feature 2
+Example output bar chart for top 15 labels according to number of comments:
+![](/assets/feature2_chart_top15_comments.png)
+
+Example output charts for yearly trends:
+![](/assets/feature2_chart_areaLabelPerYear.png)
+![](/assets/feature2_chart_bugTrend.png)
+![](/assets/feature2_chart_featureTrend.png)
 
 ### Feature 3 TBD
+Example output pie charts for different labels distribution:
+![](/assets/feature3_pie_kindLabel.png)
+![](/assets/feature3_pie_statusLabel.png)
+![](/assets/feature3_pie_areaLabel.png)
 
 ## Repository Structure
 
@@ -117,6 +128,19 @@ Example output charts for all labels (top 10)
 ├── fetch_issues/
 │   └── fetch_issues.py
 │   └── poetry_data.json
+├── fetch_issues/
+│   └── feature1_input1.png
+│   └── feature1_input2.png
+│   └── feature1_chart_issuelifespan.png
+│   └── feature1_chart_contributors.png
+│   └── feature1_chart_comments.png
+│   └── feature2_chart_top15_comments.png
+│   └── feature2_chart_areaLabelPerYear.png
+│   └── feature2_chart_bugTrend.png
+│   └── feature2_chart_featureTrend.png
+│   └── feature3_pie_kindLabel.png
+│   └── feature3_pie_statusLabel.png
+│   └── feature3_pie_areaLabel.png
 ├── analysis_one.py
 ├── config.py
 ├── config.json
@@ -150,13 +174,15 @@ The analysis implements these functions:
   The results are presented in a table, and the user can choose to view stats for a specific label or all labels. If "all" is selected, a bar chart is generated to visualize the top 10 labels by average lifespan.
   
   This analysis helps identify which labels are associated with longer-running or more complex discussions.
-- `feature2.py`: Analyzes GitHub issue data to visualize the total number of comments per label.
+- `feature2.py`: Analyzes GitHub issue data to visualize the total number of comments per label and yearly trend of different labels.
 
    - Loads issues from poetry_data.json
 
    - Tallies comment counts from timeline events for each label
 
    - Generates a bar chart showing the top 15 labels based on total comment activity
+
+   - Generates a bar chart and line charts to show yearly trend for different area labels and yearly activities in bug and features
 
   This helps identify which labels (and by proxy, which types of issues) drive the most discussion or engagement in the repository.
 - `pieChart_Labels.py`: Generates pie charts to visualize the distribution of GitHub issues by label categories. Specifically focuses on labels that start with:
