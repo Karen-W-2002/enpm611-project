@@ -13,8 +13,9 @@ This repository contains an application for analyzing **GitHub Issues** from the
 4. [Installation and Setup](#installation-and-setup)  
 5. [Usage](#usage)  
 6. [Examples](#examples)
-7. [Repository Structure](#repository-structure)  
-7. [App Functionality](#app-functionality)  
+7. [Repository Structure](#repository-structure)
+8. [Testing](#Testing)  
+9. [App Functionality](#app-functionality)  
 
 
 ## Project Overview
@@ -129,19 +130,24 @@ Example output pie charts for different labels distribution:
 ├── fetch_issues/
 │   └── fetch_issues.py
 │   └── poetry_data.json
-├── fetch_issues/
+├── tests/
+│   └── test_anaylsis_one.py
+│   └── test_config.py
+│   └── test_feature2.py
+│   └── test_pieChart_Labels.py
+├── assets/
+│   └── feature1_chart_comments.png
 │   └── feature1_input1.png
+│   └── feature1_chart_contributors.png
 │   └── feature1_input2.png
 │   └── feature1_chart_issuelifespan.png
-│   └── feature1_chart_contributors.png
-│   └── feature1_chart_comments.png
-│   └── feature2_chart_top15_comments.png
-│   └── feature2_chart_areaLabelPerYear.png
 │   └── feature2_chart_bugTrend.png
 │   └── feature2_chart_featureTrend.png
+│   └── feature2_chart_areaLabelPerYear.png
+│   └── feature2_chart_top15_comments.png
+│   └── feature3_pie_areaLabel.png
 │   └── feature3_pie_kindLabel.png
 │   └── feature3_pie_statusLabel.png
-│   └── feature3_pie_areaLabel.png
 ├── analysis_one.py
 ├── config.py
 ├── config.json
@@ -154,6 +160,117 @@ Example output pie charts for different labels distribution:
 ├── run.py
 └── README.md
 ```
+
+## Testing
+
+1. **Run all test cases**:
+   ```bash
+   python -m coverage run -m unittest discover -s tests
+   ```
+2. **Get coverage report in terminal**:
+   ```bash
+   python -m coverage report --omit="test_*"
+   ```
+3. **Get detailed HTML coverage report**:
+   ```bash
+   coverage html  --omit="test_*"
+   ```
+### -> Test: `test_anaylsis_one.py`
+
+This test file checks the functionality of the `analysis_one.py` module, which analyzes GitHub issues by label to calculate:
+
+- Average lifespan of issues (in hours)  
+- Average number of comments  
+- Total number of contributors  
+
+The tests include both normal and edge cases, such as:
+- Empty issue list
+- Missing labels or dates
+- User input filtering
+- Output format and chart generation
+
+**Test Results**:
+- **Total tests run**: 11  
+- **Passed**: 7  
+- **Failed**: 4  
+
+**Discovered Issues**:
+- Crashes when the issue list is empty (due to missing `avg_lifespan_hours` column)
+- Plotting fails if necessary data is missing
+- Label filtering fails to exclude some unexpected labels
+
+These tests helped catch important edge case bugs and highlight where better error handling is needed.
+
+### -> Test: `test_feature2.py`
+
+This test file checks the functionality of the `feature2.py` module, which analyzes the number of comments per issue label and visualizes trends over time.
+
+The tests verify:
+- Data loading and preprocessing from valid and invalid JSON files
+- Handling of file-not-found and bad JSON format errors
+- Correct calculation and sorting of comment counts per label
+- Yearly trends for labels like `area`, `bug`, and `feature`
+- Chart generation logic and output structure
+
+**Test Results**:
+- **Total tests run**: 9  
+- **Passed**: 9  
+- **Failed**: 0  
+
+**Notes**:
+- Handled errors like missing files or bad JSON input gracefully
+- No bugs were found in data analysis or visualization functions
+
+This test suite confirms that the second feature works reliably across valid inputs and gracefully handles edge cases like invalid or missing data files.
+
+### -> Test: `test_pieChart_Labels.py`
+
+This test file targets the `pieChart_Labels.py` module, which generates pie charts for GitHub issue labels grouped by `kind/`, `status/`, and `area/`.
+
+The tests evaluate:
+- Whether labels are correctly grouped and counted by prefix
+- Proper handling of edge cases like empty or missing labels
+- Chart generation without crashing
+
+**Test Results**:
+- **Total tests run**: 13  
+- **Passed**: 11  
+- **Failed**: 2  
+
+**Discovered Issues**:
+- Two tests expected exceptions (e.g., `TypeError`, general `Exception`) to be raised when invalid label formats were passed, but no exceptions occurred.
+- This suggests the function might not be validating the input label structure as strictly as it should.
+
+**Notes**:
+- The module handled normal data correctly, and generated pie charts for valid input.
+- It also gracefully skipped plotting when label data was missing.
+
+This test confirms that visualizations work under expected conditions but highlights a need for better input validation when label formats are incorrect.
+
+### -> Test: `test_config.py`
+
+This test file verifies the `config.py` module, which handles application settings loaded from `config.json` and allows runtime overrides.
+
+The tests check:
+- Loading values correctly from the configuration file
+- Setting and retrieving individual parameters
+- Handling missing or default values gracefully
+- Overwriting config values using mock command-line arguments
+
+**Test Results**:
+- **Total tests run**: 11  
+- **Passed**: 9  
+- **Failed**: 2  
+
+**Discovered Issues**:
+- Two tests failed due to incorrect mock behavior: expected calls to `set_parameter()` with custom arguments (`paramX`, `42`) were not detected.
+- This may indicate an issue with how the overwrite logic interprets or mocks input arguments.
+
+**Notes**:
+- The core loading and parameter management works as intended.
+- Improvement is needed in testing or handling of argument-based config overrides.
+
+This test ensures the configuration system is mostly stable, with minor issues in edge-case handling for argument-based updates.
 
 ## App Functionality
 The parser implements these functions:
